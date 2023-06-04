@@ -85,10 +85,10 @@ class Agent:
     def train_short_memory(self, state, action, reward, next_state, done):
         self.trainer.train_step(state, action, reward, next_state, done)
 
-    def get_action(self, state):
+    def get_action(self, state, use_epsilon=True):
         self.epsilon = 80 - self.n_game
         final_move = [0,0,0]
-        if random.randint(0, 200) < self.epsilon:
+        if use_epsilon and random.randint(0, 200) < self.epsilon:
             move = random.randint(0, 2)
             final_move[move] = 1
         else:
@@ -97,6 +97,10 @@ class Agent:
             move = torch.argmax(prediction).item()
             final_move[move] = 1
         return final_move
+    
+# Play the step predicted by the model in the environment.
+# Store the current state, move performed, and the reward.
+# Train the model based on the move performed and the reward obtained by the Environment. (Training short memory)
 
 def train():
     plot_scores = []
@@ -149,5 +153,5 @@ def play_game_with_pretrained_model():
 
 
 if __name__ == '__main__':
-    # train()
-    play_game_with_pretrained_model()
+    train()
+    # play_game_with_pretrained_model()

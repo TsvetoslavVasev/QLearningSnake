@@ -24,6 +24,12 @@ if not torch.backends.mps.is_available():
 else:
     mps_device = torch.device("mps")  # Set the MPS device
 
+# 1. Creating a class named Linear_Qnet for initializing the linear neural network.
+# 2. The function forward is used to take the input(11 state vector) and pass it through the 
+#    Neural network and apply relu activation function and give the output back i.e the next 
+#    move of 1 x 3 vector size. In short, this is the prediction function that would be called by the agent.
+# 3. The save function is used to save the trained model for future use.
+
 class Linear_QNet(nn.Module):
     def __init__(self,input_size,hidden_size,output_size):
         super().__init__()
@@ -44,6 +50,22 @@ class Linear_QNet(nn.Module):
         model_folder_path = '/Users/cvasev/Developer/QLearningSnake'
         file_name = os.path.join(model_folder_path, file_name)
         self.load_state_dict(torch.load(file_name))
+
+# 1. Initialising QTrainer class
+#    ∗ setting the learning rate for the optimizer.
+#    * Gamma value that is the discount rate used in Bellman equation.
+#    * initialising the Adam optimizer for updation of weight and biases.
+#    * criterion is the Mean squared loss function.
+# 2. Train_step function 
+#    * As you know that PyTorch work only on tensors, so we are converting all the input
+#     to tensors.
+#    * As discussed above we had a short memory training then we would only pass one value
+#     of state, action, reward, move so we need to convert them into a vector, so we had used
+#     unsqueezed function .
+#    * Get the state from the model and calculate the new Q value using the below formula:
+#                    Q_new = reward + gamma * max(next_predicted Qvalue)
+#    * calculate the mean squared error between the new Q value and previous Q value and 
+#    backpropagate that loss for weight updation. 
 
 class QTrainer:
     def __init__(self,model,lr,gamma):
